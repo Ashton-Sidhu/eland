@@ -236,6 +236,7 @@ class QueryCompiler:
         if not results:
             return self._empty_pd_ef()
 
+
         # This is one of the most performance critical areas of eland, and it repeatedly calls
         # self._mappings.field_name_pd_dtype and self._mappings.date_field_format
         # therefore create a simple cache for this data
@@ -266,10 +267,16 @@ class QueryCompiler:
             index.append(index_field)
 
             # flatten row to map correctly to 2D DataFrame
-            rows.append(self._flatten_dict(row, field_mapping_cache))
+            # rows.append(self._flatten_dict(row, field_mapping_cache))
+            rows.append(row)
 
         # Create pandas DataFrame
-        df = pd.DataFrame(data=rows, index=index)
+        # df = pd.DataFrame(data=rows, index=index)
+        df = pd.json_normalize(
+            rows
+        )
+
+        df.index = index
 
         # _source may not contain all field_names in the mapping
         # therefore, fill in missing field_names
@@ -283,7 +290,7 @@ class QueryCompiler:
             df[missing] = pd.Series(dtype=pd_dtype)
 
         # Rename columns
-        df.rename(columns=self._mappings.get_renames(), inplace=True)
+        df = df.rename(columns=self._mappings.get_renames())
 
         # Sort columns in mapping order
         if len(self.columns) > 1:
