@@ -262,11 +262,9 @@ class QueryCompiler:
             index.append(index_field)
 
             # flatten row to map correctly to 2D DataFrame
-            # rows.append(self._flatten_dict(row, field_mapping_cache))
             rows.append(row)
 
         # Create pandas DataFrame
-        # df = pd.DataFrame(data=rows, index=index)
         df = pd.json_normalize(
             rows
         )
