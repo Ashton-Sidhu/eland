@@ -245,14 +245,9 @@ class QueryCompiler:
         rows = []
         index = []
 
-        i = 0
-        for i, hit in enumerate(results, 1):
+        for hit in results:
 
-            if "_source" in hit:
-                row = hit["_source"]
-            else:
-                row = {}
-
+            row = hit["_source"] if "_source" in hit else {}
             # script_fields appear in 'fields'
             if "fields" in hit:
                 fields = hit["fields"]
